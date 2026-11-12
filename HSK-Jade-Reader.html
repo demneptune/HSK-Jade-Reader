@@ -1,0 +1,177 @@
+
+<!--
+
+HSK JADE READER
+
+TO DO LIST
+	RIGHT BAR HIGHLIGHT FOR DEFINITIONS OR ELSE COLOUR MARKERS???
+	RIGHT BAR DEFINITIONS: DO THESE NEED BOTH HSK2012 AND HSK3 LEVELS??
+	RESIZER FOR RIGHT SIDE: ONE RESIZER HANDLE BETWEEN THE SINGLE DEFINTION AT THE TOP; AND THE DEFINITION LIST AT THE BOTTOM
+	RIGHT SIDE DEFINITIONS SHOULD RESET TO TOP OF DEFINITION WHEN DEFINITION CHANGES
+	TOP OF DEFINITION SECTION ON RIGHT MUST ALWAYS BE VISIBLE
+	OPTION TO PRESERVE NON CHINESE TEXT (USEFUL ESP IF PINYIN INCLUDED, THEN NO NEED TO HOVER)
+
+
+-->
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>🍵 HSK Jade Reader</title>
+	
+	<!--ALT ICON: 玉 for "jade"-->
+	
+	
+    <link rel="stylesheet" href="HSK-Jade.css">
+</head>
+<body data-theme="jade">
+    <div id="app-wrapper">
+        <header class="app-header">
+            <div class="brand">
+                <span class="brand-icon" aria-hidden="true">🍵</span>
+                <div><strong>HSK Jade Reader</strong><small>Text analysis · Reading studio</small></div>
+            </div>
+            <div class="header-subtitle">READING WORKSPACE <span class="header-dot">◆</span> DUAL DICTIONARIES</div>
+            <div class="header-controls">
+                <span class="header-label">THEME</span>
+                <div class="segmented" id="themeOptions" aria-label="Application theme"></div>
+            </div>
+        </header>
+
+        <div class="workspace">
+            <aside class="sidebar" id="sidebar">
+                <div class="sidebar-content">
+                    <div class="section-label">CURRENT PASSAGE</div>
+                    <section class="side-card">
+                        <label for="textInput" class="field-label">Chinese text</label>
+                        <textarea id="textInput" rows="5" placeholder="Paste Chinese text here…" maxlength="20000"></textarea>
+                        <div class="input-counter"><span id="inputCount">0</span> / 20,000 characters</div>
+                        <button class="primary-button" id="analyzeButton" type="button">✎ &nbsp; Analyse text</button>
+                        <button class="quiet-button hidden" id="newTextButton" type="button">✎ &nbsp; New text / Reanalyse</button>
+                        <div class="help-text" id="analysisStatus" role="status">Original paragraph and line breaks are preserved.</div>
+                    </section>
+
+                    <div class="section-label">FIND WORDS</div>
+                    <section class="side-card">
+                        <label class="field-label" for="pinyinSearchBox">Pinyin search</label>
+                        <input id="pinyinSearchBox" type="search" autocomplete="off" placeholder="e.g. tushuguan or xuéxí">
+                        <div class="help-text" id="matchStatus">Search both the passage and vocabulary list.</div>
+                        <div class="mini-actions">
+                            <button class="mini-button" id="previousMatch" type="button" disabled>‹ Previous</button>
+                            <button class="mini-button" id="nextMatch" type="button" disabled>Next ›</button>
+                        </div>
+                    </section>
+
+                    <div class="section-label">DICTIONARY</div>
+                    <section class="side-card">
+                        <div class="field-label">Show word boundaries from</div>
+                        <div class="segmented wide" id="dictionaryOptions" aria-label="Active dictionary">
+                            <button class="segment selected" type="button" data-dictionary="hsk3" aria-pressed="true">HSK 3.0</button>
+                            <button class="segment" type="button" data-dictionary="hsk2012" aria-pressed="false">HSK 2012</button>
+                        </div>
+                        <div class="help-text">Both dictionaries are analysed independently. Switch without reloading.</div>
+                        <div class="future-source" id="futureDictionary">＋ Additional dictionary <span>Ready to connect later</span></div>
+                    </section>
+
+                    <div class="section-label">LEVEL DISPLAY</div>
+                    <section class="side-card">
+                        <div class="field-label">Highlight styles — combine any</div>
+                        <div class="segmented wide" id="highlightOptions" aria-label="HSK level highlighting styles">
+                            <button class="segment" type="button" data-highlight="text" aria-pressed="false">Text</button>
+                            <button class="segment" type="button" data-highlight="background" aria-pressed="false">Fill</button>
+                            <button class="segment selected" type="button" data-highlight="underline" aria-pressed="true">Underline</button>
+                        </div>
+                        <div class="small-note">Each colour indicates the word's HSK level. All three styles can be toggled independently.</div>
+                        <div class="field-label legend-title">HSK 3.0 level colours</div>
+                        <div class="level-legend" id="legend3"></div>
+                        <div class="field-label legend-title">HSK 2012 level colours</div>
+                        <div class="level-legend" id="legend2012"></div>
+                    </section>
+
+                    <div class="section-label">READING & LOOKUP</div>
+                    <section class="side-card button-settings" id="displayOptions">
+                        <button class="setting-button active" type="button" data-setting="hoverHelp" aria-pressed="true"><span>Quick hover meaning</span><span class="switch"></span></button>
+                        <button class="setting-button active" type="button" data-setting="showCorpus" aria-pressed="true"><span>Corpus examples on click</span><span class="switch"></span></button>
+                        <button class="setting-button active" type="button" data-setting="showOtherDictionary" aria-pressed="true"><span>Show alternative dictionary</span><span class="switch"></span></button>
+                        <button class="setting-button" type="button" data-setting="groupByLevel" aria-pressed="false"><span>Group word list by level</span><span class="switch"></span></button>
+                        <button class="setting-button" type="button" data-setting="hideLowerLevels" aria-pressed="false"><span>Hide L1/L2 from word list</span><span class="switch"></span></button>
+                        <div class="corpus-options"><div class="field-label">Corpus display (on word click)</div>
+                            <div class="segmented wide" id="corpusViewOptions" aria-label="Corpus display mode">
+                                <button class="segment selected" type="button" data-corpus-view="excerpt" aria-pressed="true">Excerpt</button>
+                                <button class="segment" type="button" data-corpus-view="full" aria-pressed="false">Full passage</button>
+                            </div>
+                        </div>
+                        <div class="font-controls"><span>Chinese text size</span><div><button class="mini-button" id="fontSmaller" type="button" aria-label="Reduce Chinese font size">A−</button><button class="mini-button" id="fontLarger" type="button" aria-label="Increase Chinese font size">A＋</button></div></div>
+                    </section>
+
+                    <div class="section-label">WORDS BY HSK LEVEL</div>
+                    <section class="side-card stats-card">
+                        <div id="statsOutput"><span class="help-text">Analyse a passage to see counts for both dictionaries.</span></div>
+                        <div class="small-note">Counts are distinct matched words, not total occurrences.</div>
+                    </section>
+                    <details class="sidebar-details"><summary>Instructions & data notes</summary>
+                        <p>Click a word to pin its definition. Click “Find in list” to scroll to its position. HSK 3.0 and HSK 2012 are kept separate; unmatched words are not silently filled from the other dictionary.</p>
+                        <p>Examples are drawn from your supplied corpus and enriched references when available.</p>
+                    </details>
+                </div>
+            </aside>
+
+            <main class="main-content" id="main-content">
+                <section class="reader-pane" id="text-pane" aria-label="Chinese reading pane">
+                    <div class="reader-topline">READER / CURRENT TEXT</div>
+                    <h1>Chinese reading passage</h1>
+                    <div class="reader-intro">Read naturally. Look up only what you need.</div>
+                    <div class="reader-meta"><span id="readingWordCount">0 words matched</span><span class="meta-dot">·</span><span id="activeDictionaryLabel">HSK 3.0 active</span><span class="meta-dot">·</span><span>Paragraphs preserved</span></div>
+                    <div id="chineseOutput" class="reading-content" aria-live="polite"><p class="empty-reader">Paste Chinese text in the sidebar and select <strong>Analyse text</strong> to begin.</p></div>
+                    <div class="reader-footer">⌕ &nbsp; Hover for a short meaning. Click to pin a word, view both dictionaries and explore examples.</div>
+                    <div id="unfoundOutput" class="unfound-output"></div>
+                </section>
+                <div class="resizer" id="dragMe" title="Drag to resize the reading pane" role="separator" aria-orientation="vertical" tabindex="0"><span></span></div>
+                <section class="vocab-pane" id="vocab-pane" aria-label="Vocabulary and dictionary pane">
+                    <div class="vocab-topline">VOCABULARY / LINKED DEFINITIONS</div>
+                    <div class="vocab-title-row"><h2>Words in this text</h2><span id="definitionCount" class="count-badge">0 words</span></div>
+                    <div class="vocab-order"><span id="listOrderLabel">In text order</span><span>·</span><span id="vocabDictionaryLabel">HSK 3.0</span></div>
+                    <section class="inspector" id="wordInspector" aria-live="polite">
+                        <div class="inspector-placeholder">Click a word in the reading passage to see its details here.</div>
+                    </section>
+                    <div class="vocab-results" id="vocabResults">
+                        <div class="vocab-list-heading"><h3>Vocabulary in this passage</h3><button class="mini-button" id="scrollToSelected" type="button" disabled>Find selected ↗</button></div>
+                        <div id="definitionsList" class="definitions-list"></div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+    <div id="wordTooltip" class="word-tooltip" role="tooltip" hidden></div>
+
+    <!-- SOURCE DATA: keep your existing dictionary/corpus .js files beside this HTML. -->
+    <script>
+        var hsk2012LxWordPlusDefnList = [];
+        var hsk3LxWordPlusDefnList = [];
+        const hskCorpusTexts = [];
+    </script>
+    <script src="HSK-2012-L3-TEXTS-NEAT.js"></script>
+    <script src="HSK-2012-L4-TEXTS-NEAT.js"></script>
+    <script src="HSK-2012-L5-TEXTS-NEAT.js"></script>
+    <script src="HSK-2012-L1-3-word-plus-def-ARRAY.js"></script>
+    <script src="HSK-2012-L3-word-plus-def-ARR-ENRICHED.js"></script>
+    <script src="HSK-2012-L4-word-plus-def-ARR-ENRICHED.js"></script>
+    <script src="HSK-2012-L5-word-plus-def-ARR-ENRICHED.js"></script>
+    <script src="HSK-2012-L6-word-plus-def-ARRAY.js"></script>
+    <script src="HSK3-L1-word-plus-def-ARRAY.js"></script>
+    <script src="HSK3-L2-word-plus-def-ARRAY.js"></script>
+    <script src="HSK3-L3-word-plus-def-ARRAY.js"></script>
+    <script src="HSK3-L4-word-plus-def-ARRAY.js"></script>
+    <script src="HSK3-L5-word-plus-def-ARRAY.js"></script>
+    <script src="HSK3-L6-word-plus-def-ARRAY.js"></script>
+    <script src="HSK3-L7-word-plus-def-ARRAY.js"></script>
+    <!-- No dependency on jQuery or HSK-Webapp-extra-code.js in this version. -->
+    <script src="HSK-Jade.js"></script>
+</body>
+</html>
