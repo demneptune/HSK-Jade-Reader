@@ -27,36 +27,7 @@ Note: the sidebar is scrollable. The selected-word inspector and longer vocabula
 
 There is intentionally **no fallback from HSK 3.0 into HSK 2012** when an HSK 3.0 word is missing. Change dictionaries to see the second analysis. Exact matches from the other source are still shown for a selected word.
 
-## Data and corpus compatibility
 
-The program expects your existing arrays:
-
-```js
-hsk3LxWordPlusDefnList[levelIndex] = [
-    ['汉字', '汉字\tpinyin\tEnglish meaning'], ...
-];
-
-hsk2012LxWordPlusDefnList[levelIndex] = [
-    ['汉字', '汉字\tpinyin\tEnglish meaning', [[book,chapter,section,count], ...]], ...
-];
-```
-
-It also supports the earlier corpus object pattern:
-
-```js
-hskCorpusTexts[4] = {
-    title: 'HSK Book 5', bookNumber: 5,
-    chapters: [
-        { chapter: 15, chapHeader: '...', sections: [
-            { section: 1, secHeader: '...', text: 'Chinese passage...' }
-        ] }
-    ]
-};
-```
-
-`CorpusIndex` scans all loaded books for examples, even if no pre-linked reference exists. It groups matching passages by book and displays five initially, with a Show More button. Enriched dictionary refs are used for additional precise source citations. If a reference is present but its source text cannot be resolved, the reference is shown with a notice instead of invented passage text.
-
-**Testing limitation:** the current upload contained your app's HTML, CSS and style JS, but not the external dictionary or corpus data scripts themselves. This program was tested with representative data and the documented book/chapter/section object structure, but your full real data could reveal additional legacy format variations. If a corpus book fails to appear, the relevant fix should usually be confined to `CorpusIndex.createIndex()`.
 
 ## Adding another colour theme
 
