@@ -1,18 +1,10 @@
 # HSK Web App — Jade Reader v2
 
-## Install, without touching the old app
+## Install:
+1. Download all files
+2. Put them all into the same folder
+3. Double click the file HSK-Jade-Reader.html. It should open in a web browser. This is a web app and it just analyses Chinese text you input.
 
-1. Unzip these files **directly into your EXISTING HSK app folder** (the folder containing your HSK-2012, HSK3 and corpus `.js` files). Do not put them into a nested subfolder unless you also move/copy the data scripts there.
-2. Open **`HSK-Jade.html`** in your browser.
-3. Your original HTML, CSS and JavaScript are **not replaced or modified**.
-
-New files:
-
-- `HSK-Jade.html` — application layout and existing data script references
-- `HSK-Jade.css` — Jade/Night themes, typography, layout and HSK level colours
-- `HSK-Jade.js` — object-oriented dictionary matching, corpus indexing, settings and UI
-
-Your original dictionary/corpus data scripts remain in use and are **NOT included** in this package. The filenames are copied from your uploaded HTML. The old `HSK-Webapp-style-code.js`, `HSK-Webapp-extra-code.js`, and jQuery are **not loaded** by this version.
 
 ## Features to try
 
